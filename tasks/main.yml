@@ -1,0 +1,17 @@
+---
+# tasks file for oneclient
+- name: Fail if the OS is not supported
+  fail:
+    msg="This role is not supported on {{ansible_distribution}}"
+  when: "ansible_distribution != 'Ubuntu' and ansible_os_family != 'RedHat'"
+
+# Include the relevant distro-specific task
+- name: Perform setup for Ubuntu
+  include: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Perform setup for EL and derivatives
+  include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+

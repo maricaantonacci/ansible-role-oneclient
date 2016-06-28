@@ -1,0 +1,29 @@
+---
+- name: "[Ubuntu] Fail if release is not supported"
+  fail:
+    msg="The role is designed only for Ubuntu 14.04"
+  when: "{{ ansible_distribution_version | version_compare('14.04', '!=') }}"
+
+- name: "[Ubuntu] Add apt repo"
+  apt_repository:
+    repo='deb [arch=amd64] {{onedata_url}}/apt/ubuntu/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main'
+    state=present
+
+- name: "[Ubuntu] Add apt source repo"
+  apt_repository:
+    repo='deb-src [arch=amd64] {{onedata_url}}/apt/ubuntu/{{ ansible_distribution_release }} {{ ansible_distribution_release }} main'
+    state=present
+
+- name: "[Ubuntu] Import the repository key"
+  apt_key:
+    url={{onedata_url}}/onedata.gpg.key
+    state=present
+
+- name: "[Ubuntu] Force an apt cache refresh"
+  apt: update_cache=yes
+
+- name: "[Ubuntu] Install Ubuntu oneclient package"
+  apt: pkg=oneclient
+
+- name: "[Ubuntu] Update libtbb2 if needed"
+  apt: pkg=libtbb2 state=latest only_upgrade=yes

@@ -1,0 +1,10 @@
+---
+- name: "[EL] Fail if distro is not supported nor tested"
+  fail: msg="The role is designed only for RedHat/CentOS 7.2 or later"
+  when: "ansible_distribution not in ('RedHat', 'CentOS') or {{ ansible_distribution_version | version_compare('7.2', '<') }}"
+
+- name: "[EL] Add yum repository"
+  get_url: url={{onedata_url}}/yum/centos/7x/onedata.repo dest=/etc/yum.repos.d/onedata.repo
+
+- name: "[EL] Install REL oneclient package"
+  yum: name=oneclient enablerepo=onedata
